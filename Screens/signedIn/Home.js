@@ -1,11 +1,12 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect,createRef} from 'react';
 import {Text,View, FlatList, StyleSheet,TouchableOpacity,TextInput,ActivityIndicator,Image} from 'react-native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-
-const Home=()=>{
+import { useScrollToTop } from '@react-navigation/native';
+const Home=({navigation})=>{
     const [searchInput,setSearchInput] = useState('');
     const [feed,setFeed] = useState([]);
-
+    const ref = React.useRef(null);
+    useScrollToTop(ref);
     // get our feed
     useEffect(() => {
         fetch('https://aurora-django-app.herokuapp.com/feed?feed_count=0')
@@ -28,6 +29,7 @@ const Home=()=>{
                     <ActivityIndicator size={"large"} color={"#2FBBF0"}/>
                     :
                     <FlatList
+                        ref={ref}
                         data={feed}
                         keyExtractor={(item,index)=>{return item.post_id.toFixed()}}
                         renderItem={({item,index})=>(
@@ -45,7 +47,9 @@ const Home=()=>{
                                         </View>
                                     </View>
                                     
-                                    <Image style={styles.coverPhoto} source={{uri:item.cover_poto}}/>
+                                    <TouchableOpacity style={styles.coverButton} onPress={()=>navigation.navigate('Player',{data:item})}>
+                                        <Image style={styles.coverPhoto} source={{uri:item.cover_poto}}/>
+                                    </TouchableOpacity>
 
                             </View>
                         )}
@@ -119,11 +123,16 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     coverPhoto:{
+        width:'100%',
+        height:'100%',
+        borderRadius:10,
+
+    },
+    coverButton:{
         width:'90%',
         height:200,
         backgroundColor:'rgba(0,0,0,0.06)',
         marginTop:20,
-        borderRadius:10,
     }
     
 })

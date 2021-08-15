@@ -6,6 +6,7 @@ import Home from './Screens/signedIn/Home';
 import Profile from './Screens/signedIn/Profile';
 import Notifications from './Screens/signedIn/Notifications';
 import Apparel from './Screens/signedIn/Apparel';
+import Player from './Screens/signedIn/Player';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,7 +16,17 @@ import {firebase} from './Firebase/firebase';
 const App: () => Node = () => {
   const [isSignedIn,setIsSignedIn]=useState(true);
   const Stack = createStackNavigator();
+  const HomeStack = createStackNavigator();
   const Tab = createBottomTabNavigator();
+
+  const HomeStackScreens = ({navigation})=>{
+    return(
+      <HomeStack.Navigator>
+        <HomeStack.Screen name="Feed" component={Home} options={{headerShown:false}}/>
+        <HomeStack.Screen name="Player" component={Player} options={{headerShown:false}}/>
+      </HomeStack.Navigator>
+    )
+  }
 
   useEffect(()=>{
     firebase.auth().onAuthStateChanged(user=>{
@@ -57,7 +68,7 @@ const App: () => Node = () => {
               inactiveTintColor: '#7A8FA6',
             }}
           >
-            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Home" component={HomeStackScreens} />
             <Tab.Screen name="Apparel" component={Apparel} />
             <Tab.Screen name="Notifications" component={Notifications} />
             <Tab.Screen name="Profile" component={Profile} />
